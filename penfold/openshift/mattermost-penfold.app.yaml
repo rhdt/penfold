@@ -1,0 +1,145 @@
+kind: Template
+apiVersion: v1
+metadata: 
+  name: mattermost-penfold-integration
+  creationTimestamp: null
+  annotations:
+    openshift.io/display-name: "Mattermost penfold integration"
+    description: "Template to provision a Mattermost penfold integration instance."
+objects: 
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata: 
+    creationTimestamp: null
+    generation: 1
+    labels:
+      service: mattermost-penfold-integration
+    name: mattermost-penfold-integration
+  spec:
+    replicas: 1
+    selector:
+      service: mattermost-penfold-integration
+    strategy:
+      resources:
+        requests:
+          cpu: 20m
+          memory: 50Mi
+        limits:
+          cpu: 200m
+          memory: 500Mi
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          service: mattermost-penfold-integration
+      spec: 
+        containers: 
+        - name: mattermost-penfold-integration
+          image: registry.centos.org/mattermost/mattermost-penfold-integration:${IMAGE_TAG_VERSION}
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 5000
+            protocol: TCP
+          env: 
+          - name: "MONGODB_HOST"
+            valueFrom:
+              secretKeyRef:
+                name: mattermost-penfold-config
+                key: mongohost
+          - name: "MONGODB_USER"
+            valueFrom:
+              secretKeyRef:
+                name: mattermost-penfold-config
+                key: mongouser
+          - name: "MONGODB_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                name: mattermost-penfold-config
+                key: mongopassword
+          - name: "MATTERMOST_HOST"
+            valueFrom:
+              secretKeyRef:
+                name: mattermost-penfold-config
+                key: mattermosthost
+          - name: "MATTERMOST_GROUP"
+            valueFrom:
+              secretKeyRef:
+                name: mattermost-penfold-config
+                key: mattermostgroup
+          - name: "MATTERMOST_USER"
+            valueFrom:
+              secretKeyRef:
+                name: mattermost-penfold-config
+                key: mattermostuser
+          - name: "MATTERMOST_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                name: mattermost-penfold-config
+                key: mattermostpassword
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+              scheme: HTTP
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  test: false
+  triggers:
+    - type: ConfigChange
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      service: mattermost-penfold-integration 
+    name: mattermost-penfold-integration
+  spec: 
+    ports: 
+    - name: 5000-tcp
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
+    selector: 
+      service: mattermost-penfold-integration
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      service: mattermost-penfold-integration
+    name: mattermost-penfold-integration
+  spec:
+    host: ''
+    port:
+      targetPort: 5000-tcp
+    to:
+      kind: Service
+      name: mattermost-penfold-integration
+      weight: 100
+    wildcardPolicy: None
+  status: {}
+parameters:
+- name: IMAGE_TAG_VERSION
+  value: "92394f2"
+- name: IMAGE_TAG
