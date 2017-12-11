@@ -42,7 +42,7 @@ objects:
       spec: 
         containers: 
         - name: mattermost-penfold-integration
-          image: registry.centos.org/mattermost/mattermost-penfold-integration:${IMAGE_TAG_VERSION}
+          image: registry.centos.org/mattermost/penfold:${IMAGE_TAG_VERSION}
           imagePullPolicy: Always
           ports:
           - containerPort: 5000
@@ -90,10 +90,10 @@ objects:
           resources: {}
           terminationMessagePath: /dev/termination-log
           livenessProbe:
-            httpGet:
-              path: /
-              port: 5000
-              scheme: HTTP
+            exec:
+              command: 
+              - cat
+              - /opt/app-root/src/penfold/cccp.yaml
             initialDelaySeconds: 15
             timeoutSeconds: 5
             periodSeconds: 10
@@ -103,7 +103,6 @@ objects:
         restartPolicy: Always
         securityContext: {}
         terminationGracePeriodSeconds: 30
-  test: false
   triggers:
     - type: ConfigChange
   status: {}
@@ -126,24 +125,7 @@ objects:
     type: ClusterIP
   status:
     loadBalancer: {}
-- apiVersion: v1
-  kind: Route
-  metadata:
-    creationTimestamp: null
-    labels:
-      service: mattermost-penfold-integration
-    name: mattermost-penfold-integration
-  spec:
-    host: ''
-    port:
-      targetPort: 5000-tcp
-    to:
-      kind: Service
-      name: mattermost-penfold-integration
-      weight: 100
-    wildcardPolicy: None
-  status: {}
 parameters:
 - name: IMAGE_TAG_VERSION
-  value: "92394f2"
+  value: "latest"
 - name: IMAGE_TAG
