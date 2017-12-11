@@ -49,40 +49,44 @@ objects:
             protocol: TCP
           env: 
           - name: "MONGODB_HOST"
+            value: "mongodb"
+          - name: "MONGODB_ADMIN_PASSWORD"
             valueFrom:
               secretKeyRef:
                 name: mattermost-penfold-config
-                key: mongohost
+                key: mongo-admin-password
           - name: "MONGODB_USER"
             valueFrom:
               secretKeyRef:
                 name: mattermost-penfold-config
-                key: mongouser
+                key: mongo-user
           - name: "MONGODB_PASSWORD"
             valueFrom:
               secretKeyRef:
                 name: mattermost-penfold-config
-                key: mongopassword
+                key: mongo-password
+          - name: "MONGODB_DATABASE"
+            value: "penfolddb"
           - name: "MATTERMOST_HOST"
             valueFrom:
               secretKeyRef:
                 name: mattermost-penfold-config
-                key: mattermosthost
+                key: mattermost-host
           - name: "MATTERMOST_GROUP"
             valueFrom:
               secretKeyRef:
                 name: mattermost-penfold-config
-                key: mattermostgroup
+                key: mattermost-group
           - name: "MATTERMOST_USER"
             valueFrom:
               secretKeyRef:
                 name: mattermost-penfold-config
-                key: mattermostuser
+                key: mattermost-user
           - name: "MATTERMOST_PASSWORD"
             valueFrom:
               secretKeyRef:
                 name: mattermost-penfold-config
-                key: mattermostpassword
+                key: mattermost-password
           resources: {}
           terminationMessagePath: /dev/termination-log
           livenessProbe:
