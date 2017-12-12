@@ -12,7 +12,7 @@ export BUILD_TIMESTAMP=`date -u +%Y-%m-%dT%H:%M:%S`+00:00
 IMAGE="penfold"
 REGISTRY="https://registry.centos.org"
 REPOSITORY="mattermost"
-TEMPLATE="openshift/penfold.app.yaml"
+TEMPLATE="openshift/mattermost-penfold.app.yaml"
 
 #Find tag used by deployment template
 echo -e "Scanning OpenShift Deployment Template for Image tag"
