@@ -70,7 +70,7 @@ objects:
       spec:
         containers:
         - name: mongodb
-          image: registry.centos.org/sclo/mongodb-32-centos7:latest
+          image: registry.centos.org/sclo/mongodb-32-centos7:${IMAGE_TAG_VERSION}
           ports:
           - containerPort: 27017
             protocol: TCP
@@ -127,3 +127,7 @@ objects:
         restartPolicy: Always
         dnsPolicy: ClusterFirst
   status: {}
+parameters:
+- name: IMAGE_TAG_VERSION
+  value: "latest"
+- name: IMAGE_TAG
