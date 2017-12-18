@@ -45,11 +45,17 @@ objects:
           image: registry.centos.org/mattermost/penfold:${IMAGE_TAG_VERSION}
           imagePullPolicy: Always
           ports:
-          - containerPort: 5000
+          - containerPort: 8080
             protocol: TCP
           env: 
           - name: "MONGODB_HOST"
             value: "mongodb"
+          - name: "DATABASE_SERVICE_NAME"
+            value: "mongodb"
+          - name: "EXPRESS_PORT"
+            value: "8080"
+          - name: "HUBOT_LOG_LEVEL"
+            value: "debug"
           - name: "MONGODB_ADMIN_PASSWORD"
             valueFrom:
               secretKeyRef:
@@ -115,10 +121,10 @@ objects:
     name: mattermost-penfold-integration
   spec: 
     ports: 
-    - name: 5000-tcp
+    - name: 8080-tcp
       protocol: TCP
-      port: 5000
-      targetPort: 5000
+      port: 8080
+      targetPort: 8080
     selector: 
       service: mattermost-penfold-integration
     sessionAffinity: None
